@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qbank_aigen/review
+
+    Review of the generated questions before saving them to the question bank.
+
+    Example context (json):
+    {
+        "actionurl": "#",
+        "sesskey": "abc123",
+        "count": 1,
+        "introtext": "1 Multiple choice question(s) generated. They will be saved as drafts in Default for Course 1.",
+        "questions": [
+            {
+                "index": 0, "number": 1, "name": "Photosynthesis products",
+                "questiontext": "Which gas is released during photosynthesis?",
+                "generalfeedback": "Plants release oxygen as a by-product.",
+                "answers": [
+                    {"text": "Oxygen", "correct": true, "feedback": "Correct."},
+                    {"text": "Nitrogen", "correct": false, "feedback": "Nitrogen is not produced."}
+                ]
+            }
+        ]
+    }
+}}
+<form method="post" action="{{actionurl}}" class="qbank_aigen-review" data-region="qbank_aigen-review">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <div class="alert alert-info">
+        {{introtext}}
+    </div>
+    <div class="d-flex align-items-center mb-3">
+        <div class="form-check mr-3">
+            <input type="checkbox" class="form-check-input" id="qbank_aigen-selectall" data-action="qbank_aigen-selectall" checked>
+            <label class="form-check-label" for="qbank_aigen-selectall">{{#str}} selectall {{/str}}</label>
+        </div>
+        <span class="text-muted small" data-region="qbank_aigen-selectedcount">{{#str}} selectedcount, qbank_aigen, {{count}} {{/str}}</span>
+    </div>
+    {{#questions}}
+        <div class="card mb-3 qbank_aigen-question">
+            <div class="card-body">
+                <div class="form-check float-right">
+                    <input type="checkbox" class="form-check-input" name="selected[]" value="{{index}}" id="qbank_aigen-q{{index}}" data-region="qbank_aigen-select" checked>
+                    <label class="form-check-label" for="qbank_aigen-q{{index}}">{{#str}} keep, qbank_aigen {{/str}}</label>
+                </div>
+                <h3 class="h6 text-muted mb-1">{{number}}. {{name}}</h3>
+                <p class="lead mb-2">{{questiontext}}</p>
+                <ul class="list-unstyled mb-2">
+                    {{#answers}}
+                        <li class="mb-1 {{#correct}}text-success font-weight-bold{{/correct}}">
+                            {{#correct}}{{#pix}} i/valid, core, {{#str}} correct, question {{/str}} {{/pix}}{{/correct}}
+                            {{^correct}}{{#pix}} i/invalid, core, {{#str}} incorrect, question {{/str}} {{/pix}}{{/correct}}
+                            {{text}}
+                            {{#feedback}}<span class="small text-muted font-weight-normal"> &mdash; {{feedback}}</span>{{/feedback}}
+                        </li>
+                    {{/answers}}
+                </ul>
+                {{#generalfeedback}}
+                    <p class="small mb-0"><strong>{{#str}} generalfeedback, question {{/str}}:</strong> {{generalfeedback}}</p>
+                {{/generalfeedback}}
+            </div>
+        </div>
+    {{/questions}}
+    <div class="d-flex">
+        <button type="submit" name="save" value="1" class="btn btn-primary mr-2">{{#str}} saveselected, qbank_aigen {{/str}}</button>
+        <button type="submit" name="discard" value="1" class="btn btn-secondary">{{#str}} discard, qbank_aigen {{/str}}</button>
+    </div>
+</form>
